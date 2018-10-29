@@ -318,6 +318,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && python3 /tmp/get-pip.py \
     && rm /usr/local/bin/pip /tmp/get-pip.py \
     && pip3 install -v \
+        ansible-lint==4.3.5 \
         astroid==2.4.2 \
         docker-compose==1.26.2 \
         pylint==2.5.3 \
@@ -377,7 +378,6 @@ RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
 # user's can always override these as needed
 ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
 ENV BUNDLE_PATH /var/tmp/.bundler-gems
-
 
 ###
 # Install npm and JSHint
