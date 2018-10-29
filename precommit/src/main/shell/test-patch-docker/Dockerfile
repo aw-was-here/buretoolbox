@@ -206,11 +206,13 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 RUN gem install rake -v 12.3.2
 RUN gem install rubocop -v 0.67.2
+RUN gem install puppet-lint -v 2.3.6
 RUN gem install bundler -v 1.17.3
 # set some reasonable defaults for ruby
 # user's can always override these as needed
 ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
 ENV BUNDLE_PATH /var/tmp/.bundler-gems
+
 
 ####
 # Install shellcheck (shell script lint)
