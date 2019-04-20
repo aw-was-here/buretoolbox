@@ -100,7 +100,6 @@ function golang_filefilter
       add_test golang
       add_test compile
     fi
-  fi
 }
 
 ## @description  check for golang compiler errors
