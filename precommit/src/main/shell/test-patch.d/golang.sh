@@ -115,6 +115,15 @@ function golang_precompile
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
+function golang_precompile
+{
+  GOMOD_DIRS_CONTROL=reset
+}
+
+## @description  check for golang compiler errors
+## @audience     private
+## @stability    stable
+## @replaceable  no
 function golang_compile
 {
   declare codebase=$1
