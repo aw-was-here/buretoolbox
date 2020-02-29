@@ -832,3 +832,21 @@ function maven_reorder_modules
   # shellcheck disable=SC2046
   echo "Elapsed: $(clock_display $(stop_clock))"
 }
+
+
+## @description  Check for maven-specific tests
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        filename
+## @return       0 = success
+## @return       1 = failure
+function maven_test4tests
+{
+  declare fn=$1
+
+  if [[ "${fn}" =~ (^|/)test/ ]]; then
+    return 0
+  fi
+  return 1
+}
