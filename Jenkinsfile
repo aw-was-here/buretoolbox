@@ -53,13 +53,15 @@ pipeline {
   stages {
     stage ('precommit-run') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'apache-yetus-at-github.com',
+        withCredentials([usernamePassword(credentialsId: 'aw-bot-github-app',
                          passwordVariable: 'GITHUB_TOKEN',
                          usernameVariable: 'GITHUB_USER')]) {
           withCredentials([usernamePassword(credentialsId: 'yetusqa-at-asf-jira',
                            passwordVariable: 'JIRA_PASSWORD',
                            usernameVariable: 'JIRA_USER')]) {
             sh '''#!/usr/bin/env bash
+
+                env
 
                 USE_DOCKER_FLAG=${USE_DOCKER_FLAG:-true}
 
@@ -192,6 +194,19 @@ pipeline {
         } catch(e) {
             echo 'junit processing: ' + e.toString()
         }
+
+
+        try {
+	           recordIssues(
+		          tool: junitParser(pattern: '**/junit-report.xml'),
+              enabledForFailure: true,
+              qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
+	           )
+        } catch(e) {
+            echo 'warningsng processing: ' + e.toString()
+        }
+
+
         archiveArtifacts "${env.YETUS_RELATIVE_PATCHDIR}/**"
         // Publish the HTML report so that it can be looked at
         // Has to be relative to WORKSPACE.
