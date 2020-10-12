@@ -53,7 +53,7 @@ pipeline {
   stages {
     stage ('precommit-run') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'aw-bot-github-app',
+        withCredentials([usernamePassword(credentialsId: 'apache-yetus-at-github.com',
                          passwordVariable: 'GITHUB_TOKEN',
                          usernameVariable: 'GITHUB_USER')]) {
           withCredentials([usernamePassword(credentialsId: 'yetusqa-at-asf-jira',
