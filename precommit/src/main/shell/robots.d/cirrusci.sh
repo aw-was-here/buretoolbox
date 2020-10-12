@@ -18,6 +18,7 @@
 
 if [[ "${CIRRUS_CI}" == true ]] &&
   declare -f compile_cycle >/dev/null; then
+
   # shellcheck disable=SC2034
   ROBOT=true
   # shellcheck disable=SC2034
@@ -54,7 +55,8 @@ if [[ "${CIRRUS_CI}" == true ]] &&
     CIRRUS_DEFAULT_BRANCH \
     CIRRUS_PR \
     CIRRUS_REPO_FULL_NAME \
-    CIRRUS_TASK_ID
+    CIRRUS_TASK_ID \
+    GITHUB_CHECK_SUITE_ID
 
   # shellcheck disable=SC2034
   GIT_BRANCH_SHA=${CIRRUS_BASE_SHA}
