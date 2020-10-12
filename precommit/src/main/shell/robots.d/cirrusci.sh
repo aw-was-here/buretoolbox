@@ -30,7 +30,6 @@ if [[ "${CIRRUS_CI}" == true ]] &&
   # shellcheck disable=SC2034
   RELOCATE_PATCH_DIR=true
 
-
   # shellcheck disable=SC2034
   if [[ "${CIRRUS_PR}" == false ]]; then
     # shellcheck disable=SC2034
@@ -50,7 +49,6 @@ if [[ "${CIRRUS_CI}" == true ]] &&
     CI \
     CIRRUS_BASE_SHA \
     CIRRUS_BRANCH \
-    CIRRUS_BUILD_ID
     CIRRUS_BUILD_ID \
     CIRRUS_CI \
     CIRRUS_DEFAULT_BRANCH \
