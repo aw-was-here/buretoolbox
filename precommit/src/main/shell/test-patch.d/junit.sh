@@ -133,88 +133,138 @@ function junit_docker_support
 ## @param        runresult
 ## @return       0 on success
 ## @return       1 on failure
-function junit_finalreport
+# function junit_finalreport
+# {
+#   declare result=$1
+#   shift
+#   declare i=0
+#   declare failures
+#   declare ourstring
+#   declare vote
+#   declare subs
+#   declare ela
+#   declare footcomment
+#   declare logfile
+#   declare comment
+#   declare url
+
+#   if [[ -z "${JUNIT_REPORT_XML}" ]]; then
+#     return
+#   fi
+
+#   big_console_header "Writing JUnit-style results to ${JUNIT_REPORT_XML}"
+
+#   url=$(get_artifact_url)
+
+# cat << EOF > "${JUNIT_REPORT_XML}"
+# <?xml version="1.0" encoding="UTF-8"?>
+# <testsuites>
+#     <testsuite tests="1" failures="'${result}'" time="1" name="Apache Yetus">
+# EOF
+
+#   i=0
+#   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
+#     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+#     vote=$(echo "${ourstring}" | cut -f2 -d\|)
+#     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+#     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+#     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+#     comment=$(echo "${ourstring}"  | cut -f6 -d\|)
+
+#     subs=${subs// }
+
+#     if [[ "${subs}"  == "${oldsubs}" ]]; then
+#       ((counter=counter+1))
+#     else
+#       oldsubs=${subs}
+#       ((counter=0))
+#     fi
+
+#     if [[ -z "${vote// }" || "${vote}" = "H" ]]; then
+#        ((i=i+1))
+#        continue
+#      fi
+
+#     if [[ ${vote// } = -1 ]]; then
+#       failures=1
+#     else
+#       failures=0
+#     fi
+
+#     {
+#       printf "<testcase id=\"%s\" classname=\"%s\" name=\"%s\" failures=\"%s\" tests=\"1\" time=\"%s\">" \
+#         "${subs}.${counter}" \
+#         "${subs}" \
+#         "${subs}" \
+#         "${failures}" \
+#         "${ela}"
+#       if [[ "${failures}" == 1 ]]; then
+#         comment=$(escape_html "${comment}")
+#         printf "<failure message=\"%s\">" "${comment}"
+
+#         if [[ -n "${logfile}" ]]; then
+#           if [[ -n "${url}" ]]; then
+#             footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+#           else
+#             footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
+#           fi
+#           escape_html "${footcomment}"
+#         fi
+#         echo "</failure>"
+#       fi
+#       echo "</testcase>"
+#     } >> "${JUNIT_REPORT_XML}"
+
+#     ((i=i+1))
+#   done
+
+#   echo "</testsuite>" >> "${JUNIT_REPORT_XML}"
+#   echo "</testsuites>" >> "${JUNIT_REPORT_XML}"
+# }
+
+## @description  Line-based junit output
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+## @return       0 on success
+## @return       1 on failure
+function junit_linecomments_end
 {
-  declare result=$1
-  shift
-  declare i=0
-  declare failures
-  declare ourstring
-  declare vote
-  declare subs
-  declare ela
-  declare footcomment
-  declare logfile
-  declare comment
-  declare url
+  declare testinfo=$1
+  declare linecount
 
-  if [[ -z "${JUNIT_REPORT_XML}" ]]; then
-    return
-  fi
+  linecount=$(wc -l "${testinfo}")
+  linecount=${linecount%% *}
+  timestamp=$(date +"%FT%T")
 
-  big_console_header "Writing JUnit-style results to ${JUNIT_REPORT_XML}"
+  #shellcheck disable=SC2016
+  testcount=$("${AWK}" -F; '{print $4}' "${testinfo}" | sort -u | wc)
 
-  url=$(get_artifact_url)
-
-cat << EOF > "${JUNIT_REPORT_XML}"
+  cat <<EOF > "${PATCH_DIR}/${JUNIT_REPORT_XML}"
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite tests="1" failures="'${result}'" time="1" name="Apache Yetus">
+<testsuite name="yetus" errors="0" failures="${linecount}" skipped="0" tests="${testcount}" time="${GLOBALTIMER}" timestamp="${timestamp}">
 EOF
 
-  i=0
-  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
-    vote=$(echo "${ourstring}" | cut -f2 -d\|)
-    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
-    ela=$(echo "${ourstring}" | cut -f4 -d\|)
-    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
-    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
-
-    subs=${subs// }
-
-    if [[ "${subs}"  == "${oldsubs}" ]]; then
-      ((counter=counter+1))
-    else
-      oldsubs=${subs}
-      ((counter=0))
-    fi
-
-    if [[ -z "${vote// }" || "${vote}" = "H" ]]; then
-       ((i=i+1))
-       continue
-     fi
-
-    if [[ ${vote// } = -1 ]]; then
-      failures=1
-    else
-      failures=0
-    fi
-
-    {
-      printf "\t<testcase id=\"%s\" classname=\"%s\" name=\"%s\" failures=\"%s\" tests=\"1\" time=\"%s\">" \
-        "${subs}.${counter}" \
-        "${subs}" \
-        "${subs}" \
-        "${failures}" \
-        "${ela}"
-      if [[ "${failures}" == 1 ]]; then
-        comment=$(escape_html "${comment}")
-        printf "\t\t<failure message=\"%s\">" "${comment}"
-
-        if [[ -n "${logfile}" ]]; then
-          if [[ -n "${url}" ]]; then
-            footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
-          else
-            footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
-          fi
-          escape_html "${footcomment}"
-        fi
-        printf "\t\t</failure>\n"
-      fi
-      printf "\t</testcase>"
-    } >> "${JUNIT_REPORT_XML}"
-
-    ((i=i+1))
-  done
-  echo "</testsuite>" >> "${JUNIT_REPORT_XML}"
+  while read -r ; do
+    fn=${REPLY%%:*}
+    rol=${REPLY/#${fn}:}
+    linenum=${rol%%:*}
+    rol=${rol/#${linenum}:}
+    column=${rol%%:*}
+    rol=${rol/#${column}:}
+    plugin=${rol%%:*}
+    text=${rol/#${plugin}:}
+    cat << EOF >> "${PATCH_DIR}/${JUNIT_REPORT_XML}"
+\t<testcase classname="yetus" name="${plugin}" file="${fn}" line="${linenum}" time="0.003" timestamp="${timestamp}">
+\t\t<failure message="ERROR" type="error">
+\t\t\t${text}
+\t\t</failure>
+\t</testcase>
+EOF
+  done < <(cat "${testinfo}")
+  cat <<EOF >> "${PATCH_DIR}/${JUNIT_REPORT_XML}"
+</testsuite>
+EOF
+>>>>>>> 1c52ffb9... swap out junit
 }

@@ -2255,14 +2255,15 @@ function bugsystem_linecomments_trigger
 
   for bugs in ${BUGLINECOMMENTS}; do
     if declare -f "${bugs}_linecomments_end" >/dev/null;then
-      "${bugs}_linecomments_end"
+      "${bugs}_linecomments_end" "${PATCH_DIR}/linecomments-sorted.txt"
     fi
   done
 
   if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
     yetus_debug "Keeping linecomments files for debugging"
   else
-    rm "${PATCH_DIR}/linecomments-in.txt" "${PATCH_DIR}/linecomments-sorted.txt"
+    :
+    #rm "${PATCH_DIR}/linecomments-in.txt" "${PATCH_DIR}/linecomments-sorted.txt"
   fi
 }
 
