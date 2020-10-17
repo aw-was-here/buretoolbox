@@ -256,11 +256,11 @@ EOF
     plugin=${rol%%:*}
     text=${rol/#${plugin}:}
     cat << EOF >> "${JUNIT_REPORT_XML}"
-\t<testcase classname="yetus" name="${plugin}" file="${fn}" line="${linenum}" time="0.003" timestamp="${timestamp}">
-\t\t<failure message="ERROR" type="error">
-\t\t\t${text}
-\t\t</failure>
-\t</testcase>
+  <testcase classname="yetus" name="${plugin}" file="${fn}" line="${linenum}" time="0.003" timestamp="${timestamp}">
+    <failure message="ERROR" type="error">
+      ${text}
+    </failure>
+  </testcase>
 EOF
   done < <(cat "${testinfo}")
   cat <<EOF >> "${JUNIT_REPORT_XML}"
