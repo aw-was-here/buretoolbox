@@ -266,5 +266,5 @@ EOF
   cat <<EOF >> "${PATCH_DIR}/${JUNIT_REPORT_XML}"
 </testsuite>
 EOF
->>>>>>> 1c52ffb9... swap out junit
+  j=1
 }
