@@ -239,9 +239,9 @@ function junit_linecomments_end
   timestamp=$(date +"%FT%T")
 
   #shellcheck disable=SC2016
-  testcount=$("${AWK}" -F; '{print $4}' "${testinfo}" | sort -u | wc)
+  testcount=$("${AWK}" -F: '{print $4}' "${testinfo}" | sort -u | wc)
 
-  cat <<EOF > "${PATCH_DIR}/${JUNIT_REPORT_XML}"
+  cat <<EOF > "${JUNIT_REPORT_XML}"
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="yetus" errors="0" failures="${linecount}" skipped="0" tests="${testcount}" time="${GLOBALTIMER}" timestamp="${timestamp}">
 EOF
@@ -255,7 +255,7 @@ EOF
     rol=${rol/#${column}:}
     plugin=${rol%%:*}
     text=${rol/#${plugin}:}
-    cat << EOF >> "${PATCH_DIR}/${JUNIT_REPORT_XML}"
+    cat << EOF >> "${JUNIT_REPORT_XML}"
 \t<testcase classname="yetus" name="${plugin}" file="${fn}" line="${linenum}" time="0.003" timestamp="${timestamp}">
 \t\t<failure message="ERROR" type="error">
 \t\t\t${text}
@@ -263,7 +263,7 @@ EOF
 \t</testcase>
 EOF
   done < <(cat "${testinfo}")
-  cat <<EOF >> "${PATCH_DIR}/${JUNIT_REPORT_XML}"
+  cat <<EOF >> "${JUNIT_REPORT_XML}"
 </testsuite>
 EOF
   j=1
