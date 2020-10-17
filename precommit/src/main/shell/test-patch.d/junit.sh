@@ -258,7 +258,9 @@ EOF
     cat << EOF >> "${JUNIT_REPORT_XML}"
   <testcase classname="yetus" name="${plugin}" file="${fn}" line="${linenum}" time="0.003" timestamp="${timestamp}">
     <failure message="ERROR" type="error">
+      <![CDATA[
       ${text}
+      ]]>
     </failure>
   </testcase>
 EOF
